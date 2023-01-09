@@ -1,0 +1,19 @@
+.settings-page-container {
+    min-height: 100vh;
+    background-color:beige;
+    text-align: center;
+}
+
+.settings-page-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.settings-card {
+    background-color: lightgray;
+}

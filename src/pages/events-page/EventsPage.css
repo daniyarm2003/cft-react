@@ -1,0 +1,41 @@
+.events-page-container {
+    min-height: 100vh;
+    background-color:beige;
+    text-align: center;
+}
+
+.events-page-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.event-card {
+    background-color: lightgray;
+    transition: 0.2s;
+    width: 10rem;
+    height: 13.5rem;
+    overflow-y: auto;
+}
+
+.event-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+.event-card:hover {
+    transform: scale(1.02);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

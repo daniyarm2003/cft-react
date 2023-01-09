@@ -1,0 +1,23 @@
+.fighter-stats-page-container {
+    min-height: 100vh;
+    background-color:beige;
+    text-align: center;
+}
+
+.fighter-stats-page-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.fight-performance-stats-card {
+    background-color: lightgray;
+}
+
+.fight-performance-stats-item {
+    background-color: transparent;
+}

@@ -1,0 +1,48 @@
+.deleted-fighter-page-container {
+    min-height: 100vh;
+    background-color:beige;
+    text-align: center;
+}
+
+.deleted-fighter-page-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.deleted-fighter-table {
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: lightgray;
+    border: 1px solid black;
+    table-layout: fixed;
+}
+
+.deleted-fighter-page-button-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 5px;
+}
+
+th {
+    background-color: gray !important;
+    border: none;
+}
+
+tr {
+    border: none;
+}
+
+tr:nth-child(even) {
+    background-color: rgb(200, 200, 200);
+}
+
+td {
+    background-color: lightgray;
+    word-wrap: break-word;
+    font-size: 1.25rem;
+    border: none;
+}

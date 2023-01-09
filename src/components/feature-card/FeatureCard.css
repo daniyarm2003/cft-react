@@ -1,0 +1,9 @@
+.feature-card-header {
+    background-color: lightgray;
+}
+
+.feature-card-item {
+    background-color: rgb(228, 226, 226);
+    padding-top: 25px;
+    padding-bottom: 25px;
+}

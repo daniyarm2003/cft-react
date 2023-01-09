@@ -1,0 +1,10 @@
+.fight-card {
+    background-color: lightgray;
+}
+
+.fight-card-button-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}

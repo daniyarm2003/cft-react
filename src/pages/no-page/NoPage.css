@@ -1,0 +1,9 @@
+.no-page-container {
+    text-align: center;
+    min-height: 100vh;
+    background-color:beige;
+}
+
+.no-page-content {
+    padding: 20px;
+}

@@ -1,0 +1,11 @@
+.main-page-container {
+    text-align: center;
+    min-height: 100vh;
+    background-color:beige;
+}
+
+.main-page-content {
+    text-align: center;
+    padding: 20px;
+    width: 75%;
+}
