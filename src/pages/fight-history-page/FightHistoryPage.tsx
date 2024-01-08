@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import { serverAPI } from '../../utils/server'
 import FightCard from '../../components/fight-card/FightCard'
 import { useStompClient } from '../../hooks/hooks'
+import FighterImageDisplay from '../../components/fighter-image-display/FighterImageDisplay'
 
 function FightHistoryPage() {
     const { fighterID } = useParams()
@@ -57,6 +58,9 @@ function FightHistoryPage() {
                     :
                         <>
                             <h1>Fight History of {fighter.name}</h1>
+                            <div>
+                                <FighterImageDisplay className='fight-history-image' fighter={fighter} rounded fluid />
+                            </div>
                             {
                                 fights.map(fight => <FightCard fight={fight} />)
                             }

@@ -4,6 +4,9 @@ import MainNavbar from '../../components/main-navbar/MainNavbar'
 import MainHeader from '../../components/main-header/MainHeader'
 import FeatureCard from '../../components/feature-card/FeatureCard'
 
+import foxCasinoImage from '../../assets/FoxCasino.png'
+import varietyImage from '../../assets/Variety.png'
+
 function MainPage() {
     return (
         <div className='main-page-container'>
@@ -18,8 +21,13 @@ function MainPage() {
                     president had the CFT belt. We're not narcissistic.
                 </p>
                 <FeatureCard />
+                <h2>Powered By</h2>
+                <div className='main-page-image-display'>
+                    <img src={varietyImage} className='main-page-image' />
+                    <img src={foxCasinoImage} className='main-page-image' />
+                </div>
             </div>
-            <footer><i>CFT Version: v1.6.0 (The Undead Update)</i></footer>
+            <footer><i>CFT Version: v1.8.0 (The Snapshot Update DELUXE Part 1)</i></footer>
         </div>
     )
 }

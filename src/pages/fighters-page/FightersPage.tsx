@@ -12,25 +12,25 @@ import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 
 import { useEffect, useState } from 'react'
-import { Fighter } from '../../utils/types'
+import { CFTEvent, CFTEventSnapshot, Fighter } from '../../utils/types'
 import { serverAPI } from '../../utils/server'
-import FighterAddModal from '../../components/fighter-add-modal/FighterAddModal'
 import FighterEditModal from '../../components/fighter-edit-modal/FighterEditModal'
 import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal'
 import { useStompClient } from '../../hooks/hooks'
 
+import FighterImageDisplay from '../../components/fighter-image-display/FighterImageDisplay'
+import EventSnapshotButton from '../../components/event-snapshot-button/EventSnapshotButton'
+
 function FightersPage() {
-    const [fighters, setFighters] = useState<Fighter[]>()
+    const [fighters, setFighters] = useState<Fighter[]>([])
 
     const [showEditFighter, setShowEditFighter] = useState(false)
     const [curFighter, setCurFighter] = useState<Fighter>()
 
-    const [showAddFighter, setShowAddFighter] = useState(false)
-
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [toDelete, setToDelete] = useState<Fighter>()
 
-    const [takingSnapshot, setTakingSnapshot] = useState(false)
+    const [curEvent, setCurEvent] = useState<CFTEvent>()
 
     const getFighters = async () => {
         try {
@@ -44,8 +44,21 @@ function FightersPage() {
         }
     }
 
+    const getCurrentEvent = async () => {
+        try {
+            const res = await serverAPI.get('/events/current')
+            const resData = res.data as CFTEvent
+
+            setCurEvent(resData)
+        }
+        catch(err) {
+            console.error(err)
+        }
+    }
+
     useEffect(() => {
         getFighters()
+        getCurrentEvent()
     }, [])
 
     useStompClient({
@@ -53,28 +66,49 @@ function FightersPage() {
         '/api/ws/fights': () => getFighters()
     })
 
-    const handleAddFighterSubmit = (fighter: Fighter) => {
+    const handleAddFighterSubmit = (fighter: Fighter, imageFile?: File) => {
         const addFighter = async () => {
             try {
-                await serverAPI.post('/fighters', fighter)
-                await getFighters()
+                const newFighterRes = await serverAPI.post('/fighters', fighter)
+
+                if(imageFile) {
+                    const formData = new FormData()
+                    formData.set('file', imageFile)
+
+                    await serverAPI.put(`/fighters/${newFighterRes.data.id}/image`, formData)
+                }
             }
             catch(err) {
                 console.error(err)
+            }
+            finally {
+                await getFighters()
             }
         }
 
         addFighter()
     }
 
-    const handleEditFighterSubmit = (fighter: Fighter) => {
+    const handleEditFighterSubmit = (fighter: Fighter, deleteImage: boolean, imageFile?: File) => {
         const editFighter = async () => {
             try {
                 await serverAPI.put(`/fighters/${fighter.id}`, fighter)
-                await getFighters()
+
+                if(imageFile) {
+                    const formData = new FormData()
+                    formData.set('file', imageFile)
+
+                    await serverAPI.put(`/fighters/${fighter.id}/image`, formData)
+                }
+                else if(deleteImage && fighter?.imageFileName) {
+                    await serverAPI.delete(`/fighters/${fighter.id}/image`)
+                }
             }
             catch(err) {
                 console.error(err)
+            }
+            finally {
+                await getFighters()
             }
         }
 
@@ -98,7 +132,7 @@ function FightersPage() {
         deleteFighter()
     }
 
-    const handleEditFighterClick = (fighter: Fighter) => {
+    const handleEditFighterClick = (fighter?: Fighter) => {
         setCurFighter(fighter)
         setShowEditFighter(true)
     }
@@ -119,7 +153,12 @@ function FightersPage() {
                 positionChange: fighter.positionChange,
                 newFighter: fighter.newFighter,
                 stats: fighter.stats,
-                positionChangeText: fighter.positionChangeText
+                positionChangeText: fighter.positionChangeText,
+                heightInBlocks: fighter.heightInBlocks,
+                lengthInBlocks: fighter.lengthInBlocks,
+                location: fighter.location,
+                team: fighter.team,
+                imageFileName: fighter.imageFileName
             }
 
             await serverAPI.put(`/fighters/${fighter.id}`, newFighter)
@@ -130,18 +169,13 @@ function FightersPage() {
         }
     }
 
-    const takeSnapshot = async () => {
-        setTakingSnapshot(true)
+    const takeSnapshot = async (event: CFTEvent) => {
+        const res = await serverAPI.post(`/events/${event.id}/snapshot`)
+        const resData = res.data as CFTEventSnapshot
 
-        try {
-            await serverAPI.post('/fighters/snapshots')
-        }
-        catch(err) {
-            console.error(err)
-        }
-        finally {
-            setTakingSnapshot(false)
-        }
+        await getCurrentEvent()
+
+        return resData
     }
 
     const getPositionChangeColor = (newFighter: boolean, positionChange: number) => {
@@ -166,6 +200,7 @@ function FightersPage() {
                                 <th></th>
                                 <th>Position</th>
                                 <th>Name</th>
+                                <th>Image</th>
                                 <th>Wins</th>
                                 <th>Draws</th>
                                 <th>Losses</th>
@@ -191,6 +226,7 @@ function FightersPage() {
                                             &nbsp;
                                         </td>
                                         <td>{fighter.name}</td>
+                                        <td><FighterImageDisplay fighter={fighter} className='fighter-image' width={50} height={50} rounded /></td>
                                         <td>{fighter.stats.wins}</td>
                                         <td>{fighter.stats.draws}</td>
                                         <td>{fighter.stats.losses}</td>
@@ -214,13 +250,11 @@ function FightersPage() {
                     </Table>
                 </div>
                 <div className='fighters-page-button-row'>
-                    <Button variant='secondary' size='lg' onClick={() => setShowAddFighter(true)}>Add Fighter</Button>
+                    <Button variant='secondary' size='lg' onClick={() => handleEditFighterClick(undefined)}>Add Fighter</Button>
                     <Button variant='secondary' size='lg' href='/fighters/deleted'>View Deleted</Button>
-                    <Button variant='secondary' size='lg' disabled={takingSnapshot} onClick={takeSnapshot}>{takingSnapshot ? 'Taking Snapshot...' : 'Take Snapshot'}</Button>
                 </div>
             </div>
-            <FighterAddModal lastPlace={fighters?.length ?? 0} show={showAddFighter} onHide={() => setShowAddFighter(false)} onSubmit={handleAddFighterSubmit} />
-            <FighterEditModal show={showEditFighter} fighter={curFighter} onHide={() => setShowEditFighter(false)} onSubmit={handleEditFighterSubmit} />
+            <FighterEditModal lastPlace={fighters?.length ?? 0} show={showEditFighter} fighter={curFighter} onHide={() => setShowEditFighter(false)} onAddSubmit={handleAddFighterSubmit} onEditSubmit={handleEditFighterSubmit} />
             <ConfirmationModal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} onConfirm={handleDeleteFighterSubmit}>
                 Are you sure you would like to delete this fighter? This action cannot be undone.
             </ConfirmationModal>

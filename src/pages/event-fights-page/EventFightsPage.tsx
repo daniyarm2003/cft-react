@@ -84,6 +84,21 @@ function EventFightsPage() {
         editFight()
     }
 
+    const moveFightPosition = async(fight: Fight, posOffset: number) => {
+        try {
+            const updatedFight = { ...fight }
+            updatedFight.fightNum = (updatedFight.fightNum ?? 0) + posOffset
+
+            await serverAPI.put(`/fights/${fight.id}`, updatedFight)
+
+            if(getCFTEvent)
+                await getCFTEvent()
+        }
+        catch(err) {
+            console.error(err)
+        }
+    }
+
     const handleDeleteSubmit = () => {
         const deleteFight = async () => {
             if(!curFight)
@@ -113,7 +128,7 @@ function EventFightsPage() {
                 getCFTEvent()
         },
         '/api/ws/fighters': fromWSUpdateObj(fighterUpdate => {
-            if(fighterUpdate.type !== 'PUT_INDIRECT' && getCFTEvent)
+            if(fighterUpdate.origin === 'FIGHTS' && getCFTEvent)
                 getCFTEvent()
         })
     })
@@ -144,13 +159,13 @@ function EventFightsPage() {
                                                     `Undercard Event #${cftEvent.fights.length - fightInd}`
                                                 }
                                             </u></h3>
-                                            <FightCard fight={fight} event={cftEvent} onEditClick={handleEditFightClick} onDeleteClick={handleDeleteFightClick} />
+                                            <FightCard fight={fight} event={cftEvent} onEditClick={handleEditFightClick} onDeleteClick={handleDeleteFightClick} moveFightPosition={moveFightPosition} />
                                             {fightInd !== cftEvent.fights.length - 1 && <br />}
                                         </>
                                     ))
                                 :
                                     cftEvent.fights.map(fight => 
-                                        <FightCard fight={fight} event={cftEvent} onEditClick={handleEditFightClick} onDeleteClick={handleDeleteFightClick} />
+                                        <FightCard fight={fight} event={cftEvent} onEditClick={handleEditFightClick} onDeleteClick={handleDeleteFightClick} moveFightPosition={moveFightPosition} />
                                 )
                             }
                             <Button variant='secondary' size='lg' onClick={handleAddFightClick}>Add Fight</Button>

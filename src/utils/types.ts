@@ -12,7 +12,12 @@ export interface Fighter {
     positionChange: number,
     positionChangeText: string,
     stats: FighterStats,
-    newFighter: boolean
+    newFighter: boolean,
+    location?: string,
+    heightInBlocks?: number,
+    lengthInBlocks?: number,
+    team?: string,
+    imageFileName?: string
 }
 
 export interface Fight {
@@ -21,14 +26,37 @@ export interface Fight {
     date: string,
     durationInSeconds: number,
     fighters: Fighter[],
-    winner?: Fighter | null
+    winner?: Fighter | null,
+    fightNum?: number
+}
+
+export interface CFTEventSnapshotEntry {
+    id: string,
+    fighter?: Fighter,
+    fighterName: string,
+    position: number,
+    wins: number,
+    losses: number,
+    draws: number,
+    noContests: number,
+    positionChange: number,
+    newFighter: boolean
+}
+
+export interface CFTEventSnapshot {
+    id: string,
+    googleSheetURL?: string,
+    snapshotEntries: CFTEventSnapshotEntry[],
+    snapshotDate: string
 }
 
 export interface CFTEvent {
     id: string,
     name: string,
     date: string,
-    fights: Fight[]
+    fights: Fight[],
+    nextFightNum?: number,
+    snapshot?: CFTEventSnapshot
 }
 
 export interface DeletedFighter {
@@ -38,9 +66,11 @@ export interface DeletedFighter {
     finalEvent: CFTEvent
 }
 
-export type WSUpdateType = 'POST' | 'PUT' | 'PUT_INDIRECT' | 'DELETE'
+export type WSUpdateType = 'POST' | 'PUT' | 'DELETE'
+export type WSUpdateOrigin = 'FIGHTERS' | 'FIGHTS' | 'EVENTS'
 
 export interface WSUpdate<T> {
+    origin: WSUpdateOrigin,
     type: WSUpdateType,
     data: T
 }

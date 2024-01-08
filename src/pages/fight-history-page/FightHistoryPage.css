@@ -1,6 +1,5 @@
 .fight-history-page-container {
     min-height: 100vh;
-    background-color:beige;
     text-align: center;
 }
 
@@ -12,4 +11,10 @@
     width: 75%;
     margin-left: auto;
     margin-right: auto;
+}
+
+.fight-history-image {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1;
 }

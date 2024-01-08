@@ -31,6 +31,35 @@ export const useCFTEvent = (uuid: string): [CFTEvent?, boolean?, (() => Promise<
     return [cftEvent, eventErr, getEvent]
 }
 
+export const useBooleanLocalStorageSetting = (localStorageProperty: string, defaultValue: boolean = true): [boolean, (enabled: boolean) => void] => {
+    const [enabled, setEnabled] = useState(window.localStorage.getItem(localStorageProperty) === 'true')
+
+    useEffect(() => {
+        if(!window.localStorage.getItem(localStorageProperty)) {
+            try {
+                window.localStorage.setItem(localStorageProperty, defaultValue.toString())
+                setEnabled(defaultValue)
+            }
+            catch(err) {
+                console.error(err)
+            }
+        }
+        
+    }, [localStorageProperty, defaultValue])
+
+    const setAndSaveEnabled = (enabled: boolean) => {
+        try {
+            window.localStorage.setItem(localStorageProperty, enabled.toString())
+            setEnabled(enabled)
+        }
+        catch(err) {
+            console.error(err)
+        }
+    }
+
+    return [ enabled, setAndSaveEnabled ]
+}
+
 export const fromWSUpdateObj = <T>(callback: (updateObj: WSUpdate<T>) => void) => {
     return (data: string) => callback(JSON.parse(data) as WSUpdate<T>)
 }

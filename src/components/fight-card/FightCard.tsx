@@ -7,12 +7,14 @@ import Button from 'react-bootstrap/Button'
 
 import { CFTEvent, Fight, Fighter } from '../../utils/types'
 import { serverAPI } from '../../utils/server'
+import FighterImageDisplay from '../fighter-image-display/FighterImageDisplay'
 
 interface FightCardProps {
     fight: Fight,
     event?: CFTEvent,
     onEditClick?: (fight: Fight) => void,
-    onDeleteClick?: (fight: Fight) => void
+    onDeleteClick?: (fight: Fight) => void,
+    moveFightPosition?: (fight: Fight, posOffset: number) => Promise<void>
 }
 
 type FightPrediction = {
@@ -23,7 +25,7 @@ type FightPrediction = {
     probability: number
 }
 
-function FightCard({ fight, event, onEditClick, onDeleteClick }: FightCardProps) {
+function FightCard({ fight, event, onEditClick, onDeleteClick, moveFightPosition }: FightCardProps) {
     const [fighter1, fighter2] = fight.fighters
 
     const [eventName, setEventName] = useState(event?.name ?? 'Loading...')
@@ -104,27 +106,44 @@ function FightCard({ fight, event, onEditClick, onDeleteClick }: FightCardProps)
 
     return (
         <Card className='fight-card'>
-            <Card.Header>
-                <Card.Title as='h3'>{fighter1?.name ?? deletedFighterName} vs {fighter2?.name ?? deletedFighterName}</Card.Title>
-                <Card.Subtitle className='text-muted'>{statusTexts[fightStatus]()}</Card.Subtitle>
+            <Card.Header className='fight-card-header'>
+                <FighterImageDisplay fighter={fighter1} className='fight-card-image' rounded />
+                <div>
+                    <Card.Title as='h3'>{fighter1?.name ?? deletedFighterName} vs {fighter2?.name ?? deletedFighterName}</Card.Title>
+                    <Card.Subtitle className='text-muted'>{statusTexts[fightStatus]()}</Card.Subtitle>
+                </div>
+                <FighterImageDisplay fighter={fighter2} className='fight-card-image' rounded />
             </Card.Header>
-            <Card.Body>
-                {
-                    fighter1 && <>
-                        <Card.Text as='h5'>{fighter1.name} Stats</Card.Text>
-                        <Card.Text>Rank: {fighter1.position || 'C'} ({fighter1.stats.wins} W, {fighter1.stats.losses} L, {fighter1.stats.draws} D, {fighter1.stats.noContests} NC)</Card.Text>
-                    </>
-                }
-                {
-                    fighter2 && <>
-                        <Card.Text as='h5'>{fighter2.name} Stats</Card.Text>
-                        <Card.Text>Rank: {fighter2.position || 'C'} ({fighter2.stats.wins} W, {fighter2.stats.losses} L, {fighter2.stats.draws} D, {fighter2.stats.noContests} NC)</Card.Text>
-                    </>
-                }
-                { (onEditClick || onDeleteClick) && <div className='fight-card-button-row'>
-                    { onEditClick && <Button variant='secondary' size='lg' onClick={() => onEditClick(fight)}>Edit Fight</Button> }
-                    { onDeleteClick && <Button variant='danger' size='lg' onClick={() => onDeleteClick(fight)}>Delete Fight</Button> }
-                </div> }
+            <Card.Body className='fight-card-body'>
+                {(event && (fight.fightNum || fight.fightNum === 0) && moveFightPosition) && <div className='fight-card-move-button-container'>
+                    <Button variant='secondary' disabled={fight.fightNum <= 0} onClick={() => moveFightPosition(fight, -1)}>▲</Button>
+                </div>}
+                <div>
+                    {
+                        fighter1 && 
+                        <>
+                            <Card.Text as='h5'>{fighter1.name} Stats</Card.Text>
+                            <Card.Text>Rank: {fighter1.position || 'C'} ({fighter1.stats.wins} W, {fighter1.stats.losses} L, {fighter1.stats.draws} D, {fighter1.stats.noContests} NC)</Card.Text>
+                        </>
+                    }
+                    {
+                        fighter2 && 
+                        <>
+                            <Card.Text as='h5'>{fighter2.name} Stats</Card.Text>
+                            <Card.Text>Rank: {fighter2.position || 'C'} ({fighter2.stats.wins} W, {fighter2.stats.losses} L, {fighter2.stats.draws} D, {fighter2.stats.noContests} NC)</Card.Text>
+                        </>
+                    }
+                    { 
+                        (onEditClick || onDeleteClick) && 
+                        <div className='fight-card-button-row'>
+                            { onEditClick && <Button variant='secondary' size='lg' onClick={() => onEditClick(fight)}>Edit Fight</Button> }
+                            { onDeleteClick && <Button variant='danger' size='lg' onClick={() => onDeleteClick(fight)}>Delete Fight</Button> }
+                        </div>
+                    }
+                </div>
+                {(event && (fight.fightNum || fight.fightNum === 0) && moveFightPosition) && <div className='fight-card-move-button-container'>
+                    <Button variant='secondary' disabled={(fight.fightNum ?? Infinity) >= (event.nextFightNum ?? 0) - 1} onClick={() => moveFightPosition(fight, 1)}>▼</Button>
+                </div>}
             </Card.Body>
             <Card.Footer>
                 <Card.Text>Event: {eventName}</Card.Text>

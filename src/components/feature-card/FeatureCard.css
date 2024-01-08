@@ -7,3 +7,9 @@
     padding-top: 25px;
     padding-bottom: 25px;
 }
+
+.feature-card-champion-image {
+    width: 50%;
+    max-width: 500px;
+    aspect-ratio: 1;
+}

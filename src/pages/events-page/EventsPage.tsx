@@ -12,6 +12,7 @@ import EventEditModal from '../../components/event-edit-modal/EventEditModal'
 import EventAddModal from '../../components/event-add-modal/EventAddModal'
 import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal'
 import { useStompClient } from '../../hooks/hooks'
+import Spinner from 'react-bootstrap/Spinner'
 
 function EventsPage() {
     const [cftEvents, setCFTEvents] = useState<CFTEvent[]>()
@@ -23,6 +24,8 @@ function EventsPage() {
 
     const [toDelete, setToDelete] = useState<CFTEvent>()
     const [deleteModalShow, setDeleteModalShow] = useState(false)
+
+    const [addEventLoading, setAddEventLoading] = useState(false)
 
     const getCFTEvents = async () => {
         try {
@@ -71,12 +74,16 @@ function EventsPage() {
     const handleAddModalSubmit = (cftEvent: CFTEvent) => {
         const addCFTEvent = async () => {
             try {
+                setAddEventLoading(true)
+
                 await serverAPI.post(`/events`, cftEvent)
                 await getCFTEvents()
             }
             catch(err) {
                 console.error(err)
             }
+
+            setAddEventLoading(false)
         }
 
         addCFTEvent()
@@ -115,14 +122,22 @@ function EventsPage() {
                                 <Card.Body className='event-card-body'>
                                     <Button variant='secondary' onClick={() => handleEditClick(cftEvent)}>Edit Name</Button>
                                     <Button href={`/events/${cftEvent.id}/fights`} variant='secondary'>View Fights</Button>
+                                    <Button href={`/events/${cftEvent.id}/snapshot`} variant='secondary' disabled={!cftEvent.snapshot}>View Snapshot</Button>
                                     <Button variant='danger' onClick={() => handleDeleteClick(cftEvent)}>Delete Event</Button>
                                 </Card.Body>
                             </Card>
                         ))
                     }
-                    <Card className='event-card cursor-pointer' onClick={() => setAddModalShow(true)}>
+                    <Card className='event-card cursor-pointer' onClick={() => setAddModalShow(!addEventLoading)}>
                         <Card.Body className='event-card-body'>
-                            <Card.Title as='h1'>+</Card.Title>
+                            {
+                                addEventLoading ?
+                                    <Card.Body>
+                                        <Spinner animation='border' />
+                                    </Card.Body>
+                                :
+                                    <Card.Title as='h1'>+</Card.Title>
+                            }
                         </Card.Body>
                     </Card>
                 </div>

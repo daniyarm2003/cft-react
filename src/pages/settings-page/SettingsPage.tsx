@@ -4,10 +4,12 @@ import './SettingsPage.css'
 import Card from 'react-bootstrap/Card'
 import ToggleButton from '../../components/toggle-button/ToggleButton'
 import { useState } from 'react'
+import { useBooleanLocalStorageSetting } from '../../hooks/hooks'
 
 function SettingsPage() {
     const [disableLiveUpdates, setDisableLiveUpdates] = useState(window.localStorage.getItem('disableLiveUpdates') === 'true')
     const [disableAIPredictions, setDisableAIPredictions] = useState(window.localStorage.getItem('disableAIPredictions') === 'true')
+    const [enableFighterImage, setEnableFighterImage] = useBooleanLocalStorageSetting('enableFighterImage')
 
     const handleLiveUpdatesChange = (enabled: boolean) => {
         try {
@@ -48,6 +50,14 @@ function SettingsPage() {
                     </Card.Header>
                     <Card.Body>
                         <ToggleButton enabled={!disableAIPredictions} onChange={handleAIPredictionsChange} size='lg' />
+                    </Card.Body>
+                </Card>
+                <Card className='settings-card'>
+                    <Card.Header>
+                        <Card.Title as='h3'>Fighter Images</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                        <ToggleButton enabled={enableFighterImage} onChange={setEnableFighterImage} size='lg' />
                     </Card.Body>
                 </Card>
             </div>

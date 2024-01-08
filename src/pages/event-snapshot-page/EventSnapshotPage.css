@@ -1,37 +1,21 @@
-.fighters-page-container {
+.event-snapshot-page-container {
     min-height: 100vh;
     text-align: center;
 }
 
-.fighters-page-content {
+.event-snapshot-page-content {
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.fighter-table {
+.snapshot-table {
     width: 75%;
     margin-left: auto;
     margin-right: auto;
     background-color: lightgray;
     border: 1px solid black;
-}
-
-.fighters-page-button-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 5px;
-}
-
-.fighter-pos-button {
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.fighter-image {
-    border: 3px solid;
 }
 
 th {

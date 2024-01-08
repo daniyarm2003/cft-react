@@ -15,10 +15,10 @@ export const getFighterWLStreak = (fighter: Fighter, fights: Fight[]) => {
     let count = 0
 
     for(const fight of finishedFights) {
-        if(fight.status !== 'has_winner' || !fight.winner)
+        if(fight.status !== 'has_winner')
             break
         
-        const isWin = fight.winner.id === fighter.id
+        const isWin = fight.winner?.id === fighter.id
 
         if(isWin !== lastFightWon)
             break
@@ -31,7 +31,7 @@ export const getFighterWLStreak = (fighter: Fighter, fights: Fight[]) => {
 
 export const getTotalFighterFights = (fighter: Fighter) => Object.values(fighter.stats).reduce((prev, next) => prev + next, 0) as number
 
-export const getFighterWinRate = (fighter: Fighter) => fighter.stats.wins / getTotalFighterFights(fighter)
+export const getFighterWinRate = (fighter: Fighter) => getTotalFighterFights(fighter) !== 0 ? fighter.stats.wins / getTotalFighterFights(fighter) : 0
 
 const getMaxFighterWLStreaks = (fighter: Fighter, fights: Fight[]): [number, number] => {
     const finishedFights = fights.filter(fight => fight.status !== 'not_started')
@@ -42,14 +42,14 @@ const getMaxFighterWLStreaks = (fighter: Fighter, fights: Fight[]): [number, num
     let maxWins = 0, maxLosses = 0, wins = 0, losses = 0
 
     finishedFights.forEach(fight => {
-        if(fight.status !== 'has_winner' || !fight.winner) {
+        if(fight.status !== 'has_winner') {
             wins = 0
             losses = 0
 
             return
         }
 
-        const isWin = fight.winner.id === fighter.id
+        const isWin = fight.winner?.id === fighter.id
 
         wins = isWin ? wins + 1 : 0
         losses = !isWin ? losses + 1 : 0
@@ -76,13 +76,13 @@ export const getFighterWLStreakDisplay = (wlStreak: number) => {
 export const getTotalFighterFightTime = (fights: Fight[]) => fights.filter(fight => fight.status !== 'not_started').reduce((prev, next) => prev + next.durationInSeconds, 0)
 
 export const getMaxFighterFightTime = (fights: Fight[]) => 
-    fights.length ? Math.max(...fights.filter(fight => fight.status !== 'not_started').map(fight => fight.durationInSeconds)) : 0
+    fights.filter(fight => fight.status !== 'not_started').length ? Math.max(...fights.filter(fight => fight.status !== 'not_started').map(fight => fight.durationInSeconds)) : 0
 
 export const getMinFighterFightTime = (fights: Fight[]) => 
-    fights.length ? Math.min(...fights.filter(fight => fight.status !== 'not_started').map(fight => fight.durationInSeconds)) : 0
+    fights.filter(fight => fight.status !== 'not_started').length ? Math.min(...fights.filter(fight => fight.status !== 'not_started').map(fight => fight.durationInSeconds)) : 0
 
 export const getAverageFighterFightTime = (fights: Fight[]) => 
-    fights.length ? Math.floor(getTotalFighterFightTime(fights) / fights.filter(fight => fight.status !== 'not_started').length) : 0
+    fights.filter(fight => fight.status !== 'not_started').length ? Math.floor(getTotalFighterFightTime(fights) / fights.filter(fight => fight.status !== 'not_started').length) : 0
 
 export const getHighestRankedDefeated = (fighter: Fighter, fights: Fight[]): Fighter | undefined => {
     const defeated = fights.filter(fight => fight.status === 'has_winner' && fight.winner?.id === fighter.id && fight.fighters.length === 2)

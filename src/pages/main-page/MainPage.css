@@ -1,11 +1,23 @@
 .main-page-container {
     text-align: center;
     min-height: 100vh;
-    background-color:beige;
 }
 
 .main-page-content {
     text-align: center;
     padding: 20px;
     width: 75%;
+}
+
+.main-page-image-display {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 10px;
+}
+
+.main-page-image {
+    width: 25%;
+    max-width: 200px;
+    aspect-ratio: 1.0;
 }

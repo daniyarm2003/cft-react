@@ -3,7 +3,7 @@ import { PORT } from './consts'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 
-const serverURL = process.env.NODE_ENV === 'development' ? `http://${window.location.hostname}:${PORT}/api` : `https://${window.location.hostname}/api`
+export const serverURL = process.env.NODE_ENV === 'development' ? `http://${window.location.hostname}:${PORT}/api` : `${window.location.protocol}//${window.location.host}/api`
 
 export const serverAPI = axios.create({
     baseURL: serverURL

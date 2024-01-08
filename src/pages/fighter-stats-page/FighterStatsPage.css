@@ -1,6 +1,5 @@
 .fighter-stats-page-container {
     min-height: 100vh;
-    background-color:beige;
     text-align: center;
 }
 
@@ -20,4 +19,10 @@
 
 .fight-performance-stats-item {
     background-color: transparent;
+}
+
+.fighter-stats-image {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1;
 }

@@ -14,6 +14,7 @@ import { getActivityStreakDisplay, getAverageFighterFightTime, getFighterActivit
 import { formatPercent, formatSecondsToMinSec } from '../../utils/format'
 import StatsListCard from '../../components/stats-list-card/StatsListCard'
 import { useStompClient } from '../../hooks/hooks'
+import FighterImageDisplay from '../../components/fighter-image-display/FighterImageDisplay'
 
 function FighterStatsPage() {
     const { fighterID } = useParams()
@@ -48,6 +49,18 @@ function FighterStatsPage() {
         }
         catch(err) {
             console.error(err)
+        }
+    }
+
+    const getFighterDetails = (): Record<string, any> => {
+        if(!fighter)
+            return {}
+
+        return {
+            'Location of Origin': fighter.location ?? 'None',
+            'Height': fighter.heightInBlocks ? `${fighter.heightInBlocks} blocks` : 'Not Set',
+            'Length/Width': fighter.lengthInBlocks ? `${fighter.lengthInBlocks} blocks` : 'Not Set',
+            'Team': fighter.team ?? 'None'
         }
     }
 
@@ -119,7 +132,10 @@ function FighterStatsPage() {
                     :
                         <>
                             <h1>Statistics of {fighter.name}</h1>
-
+                            <div className='fighter-stats-image-container'>
+                                <FighterImageDisplay className='fighter-stats-image' fighter={fighter} rounded fluid />
+                            </div>
+                            <StatsListCard listName='Fighter Details' statsList={getFighterDetails()} />
                             <StatsListCard listName='Fight Performance Stats' statsList={getFightPerformanceStats()} />
                             <StatsListCard listName='Event Stats' statsList={getEventStats()} />
                             <StatsListCard listName='Fighters Fought' statsList={getFoughtFighterList()} />

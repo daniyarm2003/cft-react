@@ -1,6 +1,5 @@
 .events-page-container {
     min-height: 100vh;
-    background-color:beige;
     text-align: center;
 }
 
@@ -21,7 +20,7 @@
     background-color: lightgray;
     transition: 0.2s;
     width: 10rem;
-    height: 13.5rem;
+    height: 17.5rem;
     overflow-y: auto;
 }
 

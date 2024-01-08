@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import './MainNavbar.css'
 
-import cftImage from '../../assets/cft.png'
+import cftImage from '../../assets/CFT3.png'
 
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
@@ -16,10 +16,10 @@ function MainNavbar() {
                 <Navbar.Collapse id='main-navbar-nav' className='justify-content-center'>
                     <Navbar.Brand><Link to='/'><img src={cftImage} alt='CFT' width='80' height='42'></img></Link></Navbar.Brand>
                     <Nav>
-                        <Nav.Link href='/events'>Events</Nav.Link>
-                        <Nav.Link href='/fighters'>Fighters</Nav.Link>
-                        <Nav.Link href='/stats'>Statistics</Nav.Link>
-                        <Nav.Link href='/settings'>Settings</Nav.Link>
+                        <Nav.Link className='main-navbar-link' color='white' href='/events'>Events</Nav.Link>
+                        <Nav.Link className='main-navbar-link' href='/fighters'>Fighters</Nav.Link>
+                        <Nav.Link className='main-navbar-link' href='/stats'>Statistics</Nav.Link>
+                        <Nav.Link className='main-navbar-link' href='/settings'>Settings</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Container>

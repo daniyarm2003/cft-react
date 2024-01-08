@@ -8,3 +8,27 @@
     align-items: center;
     gap: 5px;
 }
+
+.fight-card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.fight-card-image {
+    height: 80%;
+    max-height: 50px;
+    aspect-ratio: 1;
+}
+
+.fight-card-body {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.fight-card-move-button-container {
+    display: flex;
+    align-items: center;
+}
