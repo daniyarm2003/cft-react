@@ -12,14 +12,13 @@ import Button from 'react-bootstrap/Button'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 
 import { useEffect, useState } from 'react'
-import { CFTEvent, CFTEventSnapshot, Fighter } from '../../utils/types'
+import { Fighter } from '../../utils/types'
 import { serverAPI } from '../../utils/server'
 import FighterEditModal from '../../components/fighter-edit-modal/FighterEditModal'
 import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal'
 import { useStompClient } from '../../hooks/hooks'
 
 import FighterImageDisplay from '../../components/fighter-image-display/FighterImageDisplay'
-import EventSnapshotButton from '../../components/event-snapshot-button/EventSnapshotButton'
 
 function FightersPage() {
     const [fighters, setFighters] = useState<Fighter[]>([])
@@ -29,8 +28,6 @@ function FightersPage() {
 
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [toDelete, setToDelete] = useState<Fighter>()
-
-    const [curEvent, setCurEvent] = useState<CFTEvent>()
 
     const getFighters = async () => {
         try {
@@ -44,21 +41,8 @@ function FightersPage() {
         }
     }
 
-    const getCurrentEvent = async () => {
-        try {
-            const res = await serverAPI.get('/events/current')
-            const resData = res.data as CFTEvent
-
-            setCurEvent(resData)
-        }
-        catch(err) {
-            console.error(err)
-        }
-    }
-
     useEffect(() => {
         getFighters()
-        getCurrentEvent()
     }, [])
 
     useStompClient({
@@ -167,15 +151,6 @@ function FightersPage() {
         catch(err) {
             console.error(err)
         }
-    }
-
-    const takeSnapshot = async (event: CFTEvent) => {
-        const res = await serverAPI.post(`/events/${event.id}/snapshot`)
-        const resData = res.data as CFTEventSnapshot
-
-        await getCurrentEvent()
-
-        return resData
     }
 
     const getPositionChangeColor = (newFighter: boolean, positionChange: number) => {
