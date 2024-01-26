@@ -15,6 +15,7 @@ import { formatPercent, formatSecondsToMinSec } from '../../utils/format'
 import StatsListCard from '../../components/stats-list-card/StatsListCard'
 import { useStompClient } from '../../hooks/hooks'
 import FighterImageDisplay from '../../components/fighter-image-display/FighterImageDisplay'
+import FighterPositionGraphCard from '../../components/fighter-position-graph-card/FighterPositionGraphCard'
 
 function FighterStatsPage() {
     const { fighterID } = useParams()
@@ -135,6 +136,7 @@ function FighterStatsPage() {
                             <div className='fighter-stats-image-container'>
                                 <FighterImageDisplay className='fighter-stats-image' fighter={fighter} rounded fluid />
                             </div>
+                            <FighterPositionGraphCard fighter={fighter} />
                             <StatsListCard listName='Fighter Details' statsList={getFighterDetails()} />
                             <StatsListCard listName='Fight Performance Stats' statsList={getFightPerformanceStats()} />
                             <StatsListCard listName='Event Stats' statsList={getEventStats()} />
