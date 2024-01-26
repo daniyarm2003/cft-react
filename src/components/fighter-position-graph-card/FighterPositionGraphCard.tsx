@@ -17,7 +17,7 @@ function FighterPositionGraphCard({ fighter }: FighterPositionGraphCardProps) {
                 <Card.Title>{fighter.name}'s Position Graph</Card.Title>
             </Card.Header>
             <Card.Body>
-                <Image key={Date.now()} src={`${serverURL}/fighters/${fighter.id}/position_graph`} alt={`${fighter.name}'s Position Graph`} />
+                <Image className='fighter-position-graph-image' key={Date.now()} src={`${serverURL}/fighters/${fighter.id}/position_graph`} alt={`${fighter.name}'s Position Graph`} />
             </Card.Body>
         </Card>
     )

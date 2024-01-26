@@ -1,3 +1,8 @@
 .fighter-position-graph-card {
     background-color: lightgray;
 }
+
+.fighter-position-graph-image {
+    width: 100%;
+    max-width: fit-content;
+}
