@@ -27,7 +27,7 @@ function MainPage() {
                     <img src={foxCasinoImage} className='main-page-image' />
                 </div>
             </div>
-            <footer><i>CFT Version: v1.8.0 (The Snapshot Update DELUXE Part 1)</i></footer>
+            <footer><i>CFT Version: v1.9.0 (The Snapshot Update DELUXE Part 2)</i></footer>
         </div>
     )
 }

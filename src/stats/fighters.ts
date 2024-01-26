@@ -1,4 +1,4 @@
-import { Fighter, Fight, CFTEvent } from '../utils/types'
+import { Fighter, Fight, CFTEvent, CFTEventSnapshotEntry } from '../utils/types'
 
 export const getFighterWLStreak = (fighter: Fighter, fights: Fight[]) => {
     const finishedFights = fights.filter(fight => fight.status !== 'not_started').reverse()
@@ -136,9 +136,57 @@ export const getActivityStreakDisplay = (streak: number) => {
 }
 
 export const getFoughtFighters = (fighter: Fighter, fights: Fight[]) => {
-    const nameSet = new Set(fights.filter(fight => fight.fighters.length === 2)
+    const otherFighterList = fights.filter(fight => fight.fighters.length === 2)
         .map(fight => fight.fighters[0].id === fighter.id ? fight.fighters[1] : fight.fighters[0])
-        .map(fighter => fighter.name))
 
-    return Array.from(nameSet)
+    const idSet = new Set<string>()
+    const foughtFighters: Fighter[] = []
+
+    for(const otherFighter of otherFighterList) {
+        if(idSet.has(otherFighter.id)) {
+            continue;
+        }
+
+        foughtFighters.push(otherFighter)
+        idSet.add(otherFighter.id)
+    }
+
+    return foughtFighters
+}
+
+export const getMinFighterPosition = (snapshotEntries: CFTEventSnapshotEntry[]) => {
+    if(snapshotEntries.length === 0) {
+        return null
+    }
+
+    return Math.min(...snapshotEntries.map(entry => entry.position))
+}
+
+export const getMaxFighterPosition = (snapshotEntries: CFTEventSnapshotEntry[]) => {
+    if(snapshotEntries.length === 0) {
+        return null
+    }
+
+    return Math.max(...snapshotEntries.map(entry => entry.position))
+}
+
+export const getAverageFighterPosition = (snapshotEntries: CFTEventSnapshotEntry[]) => {
+    if(snapshotEntries.length === 0) {
+        return null
+    }
+
+    const positionSum = snapshotEntries.reduce((prev, next) => prev + next.position, 0)
+    return positionSum / snapshotEntries.length
+}
+
+export const getFighterPositionDisplay = (position: number | null) => {
+    if(position === null) {
+        return 'N/A'
+    }
+
+    else if(position === 0) {
+        return 'C'
+    }
+
+    return Math.round(position)
 }

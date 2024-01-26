@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 
 import MainNavbar from '../../components/main-navbar/MainNavbar'
-import { Fighter, Fight, CFTEvent } from '../../utils/types'
+import { Fighter, Fight, CFTEvent, CFTEventSnapshotEntry } from '../../utils/types'
 import { serverAPI } from '../../utils/server'
 
-import { getActivityStreakDisplay, getAverageFighterFightTime, getFighterActivityStreak, getFighterDebut, getFighterLastActiveEvent, getFighterWinRate, getFighterWLStreak, 
+import { getActivityStreakDisplay, getAverageFighterFightTime, getAverageFighterPosition, getFighterActivityStreak, getFighterDebut, getFighterLastActiveEvent, getFighterPositionDisplay, getFighterWinRate, getFighterWLStreak, 
     getFighterWLStreakDisplay, getFoughtFighters, getHighestRankedDefeated, getMaxFighterFightTime, getMaxFighterLossStreak, 
-    getMaxFighterWinStreak, getMinFighterFightTime, getTotalFighterFights, getTotalFighterFightTime } from '../../stats/fighters'
+    getMaxFighterPosition, 
+    getMaxFighterWinStreak, getMinFighterFightTime, getMinFighterPosition, getTotalFighterFights, getTotalFighterFightTime } from '../../stats/fighters'
 
 import { formatPercent, formatSecondsToMinSec } from '../../utils/format'
 import StatsListCard from '../../components/stats-list-card/StatsListCard'
@@ -23,6 +24,9 @@ function FighterStatsPage() {
     const [fighter, setFighter] = useState<Fighter>()
     const [fights, setFights] = useState<Fight[]>([])
     const [events, setEvents] = useState<CFTEvent[]>([])
+    const [snapshotEntries, setSnapshotEntries] = useState<CFTEventSnapshotEntry[]>([])
+
+    const [allFighters, setAllFighters] = useState<Fighter[]>([])
 
     const getFighter = async () => {
         try {
@@ -35,6 +39,11 @@ function FighterStatsPage() {
             const fightsResData = fightsRes.data as Fight[]
 
             setFights(fightsResData)
+
+            const snapshotEntriesRes = await serverAPI.get(`/fighters/${fighterID}/snapshots`)
+            const snapshotEntriesResData = snapshotEntriesRes.data as CFTEventSnapshotEntry[]
+
+            setSnapshotEntries(snapshotEntriesResData)
         }
         catch(err) {
             console.error(err)
@@ -47,6 +56,18 @@ function FighterStatsPage() {
             const resData = res.data as CFTEvent[]
 
             setEvents(resData)
+        }
+        catch(err) {
+            console.error(err)
+        }
+    }
+
+    const getAllFighters = async() => {
+        try {
+            const res = await serverAPI.get('/fighters')
+            const resData = res.data as Fighter[]
+
+            setAllFighters(resData)
         }
         catch(err) {
             console.error(err)
@@ -85,7 +106,10 @@ function FighterStatsPage() {
             'Total Fight Duration': formatSecondsToMinSec(getTotalFighterFightTime(fights)),
             'Longest Fight Duration': formatSecondsToMinSec(getMaxFighterFightTime(fights)),
             'Shortest Fight Duration': formatSecondsToMinSec(getMinFighterFightTime(fights)),
-            'Average Fight Duration': formatSecondsToMinSec(getAverageFighterFightTime(fights))
+            'Average Fight Duration': formatSecondsToMinSec(getAverageFighterFightTime(fights)),
+            'Highest Position': getFighterPositionDisplay(getMinFighterPosition(snapshotEntries)),
+            'Lowest Position': getFighterPositionDisplay(getMaxFighterPosition(snapshotEntries)),
+            'Average Position': getFighterPositionDisplay(getAverageFighterPosition(snapshotEntries))
         }
     }
 
@@ -96,7 +120,27 @@ function FighterStatsPage() {
         const fighters = getFoughtFighters(fighter, fights)
         const fighterList: Record<string, any> = {}
         
-        fighters.forEach((fighter, ind) => fighterList[`Fighter ${ind + 1}`] = fighter)
+        fighters.forEach((fighter, ind) => fighterList[`Fighter ${ind + 1}`] = fighter.name)
+
+        return fighterList
+    }
+
+    const getNotFoughtFighterList = (): Record<string, any> => {
+        if(!fighter)
+            return {}
+
+        const fighterIds = new Set(getFoughtFighters(fighter, fights).map(fighter => fighter.id))
+
+        const fighterList: Record<string, any> = {}
+        let fighterNum = 1
+
+        for(const otherFighter of allFighters) {
+            if(otherFighter.id === fighter.id || fighterIds.has(otherFighter.id)) {
+                continue
+            }
+
+            fighterList[`Fighter ${fighterNum++}`] = otherFighter.name
+        }
 
         return fighterList
     }
@@ -115,12 +159,22 @@ function FighterStatsPage() {
     useEffect(() => {
         getFighter()
         getEvents()
+        getAllFighters()
     }, [])
 
     useStompClient({
-        '/api/ws/fighters': () => getFighter(),
-        '/api/ws/fights': () => getFighter(),
-        '/api/ws/events': () => getEvents()
+        '/api/ws/fighters': () => {
+            getFighter()
+            getAllFighters()
+        },
+        '/api/ws/fights': () => {
+            getFighter()
+            getAllFighters()
+        },
+        '/api/ws/events': () => {
+            getEvents()
+            getAllFighters()
+        }
     })
 
     return (
@@ -141,6 +195,7 @@ function FighterStatsPage() {
                             <StatsListCard listName='Fight Performance Stats' statsList={getFightPerformanceStats()} />
                             <StatsListCard listName='Event Stats' statsList={getEventStats()} />
                             <StatsListCard listName='Fighters Fought' statsList={getFoughtFighterList()} />
+                            <StatsListCard listName='Fighters Not Fought' statsList={getNotFoughtFighterList()} />
                         </>
                 }
             </div>
