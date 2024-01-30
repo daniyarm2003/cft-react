@@ -1,8 +1,12 @@
 # CFT React
 
-This is the source code for the frontend of the Certified Fighting Tournament (CFT) website, made using React and TypeScript. 
-This website, paired with the Spring Boot backend, has the ability to save fighters, fights and events, and simulates a UFC style
+This is the source code for the frontend of the Champion's Fighting Tournament (CFT) website, made using React and TypeScript. 
+This website, paired with the Spring backend, has the ability to save fighters, fights and events, and simulates a UFC style
 league. It can keep track of champions, fighter positions, statistics, and make simple AI predictions.
+
+![Fighter List Image](github/fighterlist.png)
+![Fight List Image](github/fightlist.png)
+![Position Graph Image](github/positiongraph.png)
 
 ## Available Scripts
 
